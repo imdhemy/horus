@@ -1,5 +1,7 @@
 {
-  "name": "jsnes-web",
+  "name": "horus-web",
+  "description": "The React web frontend for Horus, a fork of JSNES",
+  "author": "Dhemy",
   "version": "1.0.0",
   "license": "Apache-2.0",
   "private": true,

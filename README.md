@@ -1,10 +1,14 @@
-# JSNES
+# Horus
 
-A JavaScript NES emulator.
+<img src="logo.png" alt="Horus logo" width="240">
 
-It's a library that works in both the browser and Node.js.
+Horus is a JavaScript NES emulator maintained by Dhemy, forked from [JSNES](https://github.com/bfirsh/jsnes), originally authored by Ben Firshman.
+
+See [AUTHORS.md](AUTHORS.md) for credits.
 
 ## Installation
+
+The npm and CDN examples below use upstream JSNES.
 
 For Node.js or Webpack:
 

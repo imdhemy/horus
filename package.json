@@ -1,9 +1,12 @@
 {
-  "name": "jsnes",
+  "name": "horus",
   "version": "2.1.0",
   "description": "A JavaScript NES emulator",
-  "homepage": "https://github.com/bfirsh/jsnes",
-  "author": "Ben Firshman <ben@firshman.com>",
+  "homepage": "https://github.com/imdhemy/horus",
+  "author": "Dhemy",
+  "contributors": [
+    "Ben Firshman <ben@firshman.com>"
+  ],
   "main": "dist/jsnes.js",
   "exports": {
     ".": {
@@ -15,7 +18,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/bfirsh/jsnes.git"
+    "url": "https://github.com/imdhemy/horus.git"
   },
   "files": [
     "dist",

@@ -16,7 +16,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Code Architecture
 
-JSNES is a JavaScript NES emulator with component-based architecture mirroring actual NES hardware:
+Horus is a JavaScript NES emulator with component-based architecture mirroring actual NES hardware:
 
 ### Core Components (all in `src/`)
 

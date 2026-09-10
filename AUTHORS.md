@@ -1,6 +1,12 @@
 Authors
 =======
 
+Horus maintainer:
+
+ * Dhemy
+
+Original JSNES author:
+
  * Ben Firshman
 
 Thanks to:

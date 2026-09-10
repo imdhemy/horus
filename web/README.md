@@ -1,6 +1,8 @@
-# JSNES Web UI
+# Horus Web UI
 
-A React-based web UI for [JSNES](https://github.com/bfirsh/jsnes).
+The current React web frontend for Horus, a fork of [JSNES](https://github.com/bfirsh/jsnes), maintained by Dhemy.
+
+The local emulator dependency remains named `jsnes` for compatibility with existing imports. See [the root README](../README.md) for project information and upstream attribution.
 
 ## Running in development
 
@@ -37,11 +39,11 @@ To disable:
 
 This logs FPS, audio buffer underruns/overruns, frame skips, and NES status updates.
 
-## Embedding JSNES in your own app
+## Upstream embedding notes
 
 Unfortunately this isn't trivial at the moment. The best way is copy and paste code from this repository into a React app, then use the [`<Emulator>`](https://github.com/bfirsh/jsnes-web/blob/master/src/Emulator.js). [Here is a usage example.](https://github.com/bfirsh/jsnes-web/blob/d3c35eec11986412626cbd08668dbac700e08751/src/RunPage.js#L119-L125).
 
-A project for potential contributors (hello!): jsnes-web should be reusable and on NPM! It just needs compiling and bundling.
+These links describe the upstream JSNES web integration; they do not describe a published Horus package.
 
 ## Adding roms
 
