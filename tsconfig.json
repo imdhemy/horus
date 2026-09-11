@@ -2,14 +2,18 @@
   "compilerOptions": {
     "allowJs": true,
     "checkJs": false,
-    "noEmit": true,
+    "noEmitOnError": true,
+    "rootDir": "src",
+    "outDir": "dist/esm",
+    "sourceMap": true,
     "skipLibCheck": true,
     "module": "node16",
     "moduleResolution": "node16",
     "esModuleInterop": true,
     "target": "es2015",
-    "lib": ["es2015", "dom"]
+    "lib": ["es2015", "dom"],
+    "strict": true
   },
-  "include": ["src/**/*.d.ts", "index.d.ts"],
+  "include": ["src/**/*.js", "src/**/*.ts", "index.d.ts"],
   "exclude": ["node_modules", "dist", "test"]
 }

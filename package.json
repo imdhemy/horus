@@ -7,13 +7,13 @@
   "contributors": [
     "Ben Firshman <ben@firshman.com>"
   ],
-  "main": "dist/jsnes.js",
+  "main": "dist/jsnes.cjs",
   "exports": {
     ".": {
       "types": "./index.d.ts",
-      "import": "./src/index.js",
-      "require": "./dist/jsnes.js",
-      "default": "./src/index.js"
+      "import": "./dist/esm/index.js",
+      "require": "./dist/jsnes.cjs",
+      "default": "./dist/esm/index.js"
     }
   },
   "repository": {
@@ -28,12 +28,12 @@
   "license": "Apache-2.0",
   "type": "module",
   "scripts": {
-    "build": "webpack",
+    "build": "npm run typecheck && webpack && tsc",
     "typecheck": "tsc --noEmit",
-    "test": "npm run typecheck && prettier --check '**/*.{js,jsx,css}' && node --test ./test/*.spec.js",
-    "test:watch": "node --test --watch ./test/*.spec.js",
+    "test": "npm run typecheck && prettier --check '**/*.{js,jsx,ts,css}' && node --import tsx --test ./test/*.spec.js",
+    "test:watch": "node --import tsx --test --watch ./test/*.spec.js",
     "prepublishOnly": "npm run build",
-    "format": "prettier --write '**/*.{js,jsx,css}'",
+    "format": "prettier --write '**/*.{js,jsx,ts,css}'",
     "deploy": "wrangler deploy",
     "preview": "wrangler dev"
   },
@@ -45,6 +45,8 @@
     "eslint-webpack-plugin": "^6.0.0",
     "prettier": "^3.6.2",
     "terser-webpack-plugin": "^5.3.10",
+    "ts-loader": "^9.6.2",
+    "tsx": "^4.23.13",
     "typescript": "^6.0.2",
     "webpack": "^5.100.2",
     "webpack-cli": "^7.0.2",

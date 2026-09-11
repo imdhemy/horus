@@ -6,6 +6,7 @@ export default {
   entry: {
     jsnes: "./src/index.js",
     "jsnes.min": "./src/index.js",
+    commonjs: { import: "./src/index.js", filename: "jsnes.cjs" },
   },
   mode: "production",
   devtool: "source-map",
@@ -18,7 +19,25 @@ export default {
     umdNamedDefine: true,
     clean: true,
   },
-  module: {},
+  resolve: {
+    extensions: [".js", ".ts"],
+    extensionAlias: { ".js": [".js", ".ts"] },
+  },
+  module: {
+    rules: [
+      {
+        test: /\.ts$/,
+        exclude: /node_modules/,
+        use: {
+          loader: "ts-loader",
+          options: {
+            configFile: path.resolve(import.meta.dirname, "tsconfig.json"),
+            onlyCompileBundledFiles: true,
+          },
+        },
+      },
+    ],
+  },
   optimization: {
     minimize: true,
     minimizer: [
