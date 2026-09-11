@@ -229,7 +229,9 @@ To build a distribution:
 
     $ npm run build
 
-This will create `dist/jsnes.min.js`.
+This creates the browser bundles `dist/jsnes.js` and
+`dist/jsnes.min.js`, the CommonJS entry `dist/jsnes.cjs`, and compiled ES modules
+in `dist/esm`.
 
 ## Running tests
 
