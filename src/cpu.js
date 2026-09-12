@@ -6,7 +6,7 @@ import {
   ADDR_POSTIDXIND,
 } from "./cpu/addressing-mode.js";
 import { INVALID_OPCODE, OPCODE_TABLE } from "./cpu/opcode-table.js";
-import { powerUp } from "./cpu/memory.ts";
+import { powerUp } from "./cpu/memory.js";
 
 class CPU {
   // IRQ Types

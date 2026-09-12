@@ -163,10 +163,22 @@ import {
 // able to scan straight down the "mode" column makes the table much
 // more readable than the default formatting would allow.
 
-export const INVALID_OPCODE = { ins: -1, mode: 0, size: 1, cycles: 2 };
+type OpcodeEntry = {
+  ins: number;
+  mode: number;
+  size: number;
+  cycles: number;
+};
+
+export const INVALID_OPCODE: OpcodeEntry = {
+  ins: -1,
+  mode: 0,
+  size: 1,
+  cycles: 2,
+};
 
 // prettier-ignore
-export const OPCODE_TABLE = {
+export const OPCODE_TABLE: Partial<Record<number, OpcodeEntry>> = {
   // ADC — Add with carry
   0x69: { ins: INS_ADC, mode: ADDR_IMM,        size: 2, cycles: 2 },
   0x65: { ins: INS_ADC, mode: ADDR_ZP,         size: 2, cycles: 3 },
