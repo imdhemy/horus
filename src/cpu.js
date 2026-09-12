@@ -5,7 +5,8 @@ import {
   ADDR_ACC,
   ADDR_POSTIDXIND,
 } from "./cpu/addressing-mode.js";
-import { OPCODE_TABLE, INVALID_OPCODE } from "./cpu/opcode-table.js";
+import { INVALID_OPCODE, OPCODE_TABLE } from "./cpu/opcode-table.js";
+import { powerUp } from "./cpu/memory.ts";
 
 class CPU {
   // IRQ Types
@@ -16,17 +17,7 @@ class CPU {
   constructor(nes) {
     this.nes = nes;
 
-    // Main memory (Uint8Array is zero-initialized, so only need to set non-zero regions)
-    this.mem = new Uint8Array(0x10000);
-
-    this.mem.fill(0xff, 0, 0x2000);
-    for (let p = 0; p < 4; p++) {
-      let j = p * 0x800;
-      this.mem[j + 0x008] = 0xf7;
-      this.mem[j + 0x009] = 0xef;
-      this.mem[j + 0x00a] = 0xdf;
-      this.mem[j + 0x00f] = 0xbf;
-    }
+    this.mem = powerUp();
 
     // CPU Registers:
     this.REG_ACC = 0;
