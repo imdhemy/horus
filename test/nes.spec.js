@@ -4,10 +4,6 @@ import fs from "fs";
 import NES from "../src/nes.js";
 
 describe("NES", function () {
-  it("can be initialized", function () {
-    let nes = new NES();
-  });
-
   it("loads a ROM and runs a frame", function () {
     let onFrame = mock.fn();
     let nes = new NES({ onFrame: onFrame });

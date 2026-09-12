@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
-import { describe, it, beforeEach } from "node:test";
+import { beforeEach, describe, it } from "node:test";
 import CPU from "../src/cpu.js";
+import GameGenie from "../src/gamegenie.js";
 
 // Based on https://github.com/gutomaia/wedNESday/blob/0.0.x/wednesday/cpu_6502_spec.py
 // ... which was based on https://github.com/nwidger/nintengo/blob/master/m65go2/instructions_test.go
@@ -44,8 +45,6 @@ MMAP.prototype.load = function (addr) {
 MMAP.prototype.write = function (addr, val) {
   this.mem[addr] = val;
 };
-
-import GameGenie from "../src/gamegenie.js";
 
 const NES = function (mmap) {
   this.mmap = mmap;
@@ -106,12 +105,11 @@ describe("CPU", function () {
   }
 
   function execute() {
-    let cycles = cpu.emulate();
-    return cycles;
+    return cpu.emulate();
   }
 
   function cpu_set_register(register, value) {
-    if (register == "P") {
+    if (register === "P") {
       cpu.setStatus(value);
     } else {
       let reg = REGISTER_MAP[register];
@@ -120,13 +118,13 @@ describe("CPU", function () {
   }
 
   function cpu_register(register) {
-    if (register == "P") {
+    if (register === "P") {
       // Mask bits 4-5: B and unused don't exist as physical flags
       return cpu.getStatus() & 0xcf;
     }
     const reg = REGISTER_MAP[register];
     const val = cpu[reg];
-    if (register == "PC") {
+    if (register === "PC") {
       return val + 1;
     }
     return val;
@@ -135,7 +133,7 @@ describe("CPU", function () {
   function cpu_flag(flag) {
     let fg = FLAG_MAP[flag];
     let val = Boolean(cpu[fg]);
-    if (flag == "Z") {
+    if (flag === "Z") {
       return !val;
     }
     return val;
@@ -143,7 +141,7 @@ describe("CPU", function () {
 
   function cpu_set_flag(flag) {
     let fg = FLAG_MAP[flag];
-    if (flag == "Z") {
+    if (flag === "Z") {
       cpu[fg] = 0;
     } else {
       cpu[fg] = 1;
@@ -152,7 +150,7 @@ describe("CPU", function () {
 
   function cpu_unset_flag(flag) {
     let fg = FLAG_MAP[flag];
-    if (flag == "Z") {
+    if (flag === "Z") {
       cpu[fg] = 1;
     } else {
       cpu[fg] = 0;
@@ -189,7 +187,7 @@ describe("CPU", function () {
     cpu.requestIrq(typeMap[type]);
   }
 
-  function cpu_get_interrupt(type) {
+  function cpu_get_interrupt() {
     return cpu.irqRequested;
   }
 
@@ -3653,7 +3651,7 @@ describe("CPU", function () {
     assert.strictEqual(cpu_pull_byte(), 0xeb);
     assert.strictEqual(cpu_pull_word(), 0x100);
     assert.strictEqual(cpu_register("PC"), 0x140);
-    assert.strictEqual(cpu_get_interrupt("irq"), false);
+    assert.strictEqual(cpu_get_interrupt(), false);
   });
 
   it("nmi interrupt", function () {
@@ -3668,7 +3666,7 @@ describe("CPU", function () {
     assert.strictEqual(cpu_pull_byte(), 0xef);
     assert.strictEqual(cpu_pull_word(), 0x100);
     assert.strictEqual(cpu_register("PC"), 0x140);
-    assert.strictEqual(cpu_get_interrupt("nmi"), false);
+    assert.strictEqual(cpu_get_interrupt(), false);
   });
 
   it("rst interrupt", function () {
@@ -3680,6 +3678,6 @@ describe("CPU", function () {
     execute_interrupt();
 
     assert.strictEqual(cpu_register("PC"), 0x140);
-    assert.strictEqual(cpu_get_interrupt("rst"), false);
+    assert.strictEqual(cpu_get_interrupt(), false);
   });
 });
