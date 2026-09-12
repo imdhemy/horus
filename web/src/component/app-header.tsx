@@ -9,7 +9,7 @@ export const AppHeader = () => {
             </div>
             <p>
                 A JavaScript NES emulator.{' '}
-                <a href='https://github.com/imdhemy/horus' target='_blank'>
+                <a href='https://github.com/imdhemy/horus' target='_blank' rel='noopener noreferrer'>
                     Source on GitHub.
                 </a>
             </p>
