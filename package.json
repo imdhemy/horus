@@ -32,6 +32,7 @@
     "typecheck": "tsc --noEmit",
     "test": "npm run typecheck && prettier --check '**/*.{js,jsx,ts,css}' && node --import tsx --test ./test/*.spec.js",
     "test:watch": "node --import tsx --test --watch ./test/*.spec.js",
+    "vitest": "vitest --run",
     "prepublishOnly": "npm run build",
     "format": "prettier --write '**/*.{js,jsx,ts,css}'",
     "deploy": "wrangler deploy",
@@ -48,6 +49,7 @@
     "ts-loader": "^9.6.2",
     "tsx": "^4.23.13",
     "typescript": "^6.0.2",
+    "vitest": "^5.0.0",
     "webpack": "^5.100.2",
     "webpack-cli": "^7.0.2",
     "wrangler": "^4.92.0"
