@@ -99,8 +99,8 @@ export default class Browser {
     this._gamepadPolling = this.gamepad.startPolling();
 
     this.keyboard = new KeyboardController({
-      onButtonDown: this.gamepad.disableIfGamepadEnabled(this.nes.buttonDown),
-      onButtonUp: this.gamepad.disableIfGamepadEnabled(this.nes.buttonUp),
+      onButtonDown: this.gamepad.inputs.keyboardDown,
+      onButtonUp: this.gamepad.inputs.keyboardUp,
     });
     this.keyboard.loadKeys();
 

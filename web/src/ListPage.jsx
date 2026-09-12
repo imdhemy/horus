@@ -3,6 +3,19 @@ import { Link } from "react-router-dom";
 import config from "./config";
 
 import RomLibrary from "./RomLibrary";
+import { AppHeader } from "./component/app-header";
+import { RomList } from "./component/rom-list";
+
+function toRomList(roms) {
+  const result = [];
+  Object.keys(roms).map((i) => {
+    result.push({
+      id: i,
+      name: roms[i]["name"],
+    });
+  });
+  return result;
+}
 
 class ListPage extends Component {
   constructor(props) {
@@ -11,6 +24,7 @@ class ListPage extends Component {
       romLibrary: RomLibrary.load(),
     };
   }
+
   render() {
     return (
       <div
@@ -19,29 +33,8 @@ class ListPage extends Component {
         onDrop={this.handleDrop}
       >
         <div className="max-w-3xl mx-auto py-4 pb-6">
-          <header className="mb-4">
-            <h1 className="mb-3">JSNES</h1>
-            <p>
-              A JavaScript NES emulator.{" "}
-              <a href="https://github.com/bfirsh/jsnes">Source on GitHub.</a>
-            </p>
-          </header>
-
-          <div className="mb-4">
-            {Object.keys(config.ROMS)
-              .sort()
-              .map((key) => (
-                <Link
-                  key={key}
-                  to={"/run/" + encodeURIComponent(key)}
-                  className="block px-5 py-3 border border-gray-300 bg-black text-gray-100 no-underline hover:text-gray-100"
-                >
-                  {config.ROMS[key]["name"]}
-                  <span className="float-right">&rsaquo;</span>
-                </Link>
-              ))}
-          </div>
-
+          <AppHeader />
+          <RomList roms={toRomList(config.ROMS)} />
           <p>
             Or, drag and drop a ROM file onto the page to play it. (Google may
             help you find them.)
