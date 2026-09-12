@@ -46,11 +46,11 @@ class ControlMapperRow extends Component {
     }
 
     var searchButton = (gamepadConfig, buttonId) => {
-      return gamepadConfig.buttons.filter((b) => b.buttonId === buttonId)[0];
+      return gamepadConfig?.buttons.find((b) => b.buttonId === buttonId);
     };
 
     var searchNewButton = (prevGamepadConfig, gamepadConfig) => {
-      return gamepadConfig.buttons.filter((b) => {
+      return (gamepadConfig?.buttons || []).filter((b) => {
         return (
           !prevGamepadConfig ||
           !prevGamepadConfig.buttons.some((b2) => b2.buttonId === b.buttonId)

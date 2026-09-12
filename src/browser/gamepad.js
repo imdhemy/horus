@@ -1,150 +1,98 @@
+import Controller from "../controller.js";
+import PlayerInputs from "./player-inputs.js";
+
 export default class GamepadController {
   constructor(options) {
     this.onButtonDown = options.onButtonDown;
     this.onButtonUp = options.onButtonUp;
     this.gamepadState = [];
     this.buttonCallback = null;
+    this.inputs = new PlayerInputs(options);
   }
 
-  disableIfGamepadEnabled = (callback) => {
-    var self = this;
-    return (playerId, buttonId) => {
-      if (!self.gamepadConfig) {
-        return callback(playerId, buttonId);
-      }
+  ensureDefaultConfig = (gamepad) => {
+    if (
+      gamepad.mapping !== "standard" ||
+      this.gamepadConfig?.configs?.[gamepad.id]
+    ) {
+      return;
+    }
 
-      var playerGamepadId = self.gamepadConfig.playerGamepadId;
-      if (!playerGamepadId || !playerGamepadId[playerId - 1]) {
-        // allow callback only if player is not associated to any gamepad
-        return callback(playerId, buttonId);
-      }
+    const mapping = [
+      [0, Controller.BUTTON_A],
+      [2, Controller.BUTTON_B],
+      [8, Controller.BUTTON_SELECT],
+      [9, Controller.BUTTON_START],
+      [12, Controller.BUTTON_UP],
+      [13, Controller.BUTTON_DOWN],
+      [14, Controller.BUTTON_LEFT],
+      [15, Controller.BUTTON_RIGHT],
+    ];
+    this.gamepadConfig = {
+      ...this.gamepadConfig,
+      playerGamepadId: this.gamepadConfig?.playerGamepadId || [null, null],
+      configs: {
+        ...this.gamepadConfig?.configs,
+        [gamepad.id]: {
+          buttons: mapping.map(([code, buttonId]) => ({
+            type: "button",
+            code,
+            buttonId,
+          })),
+        },
+      },
     };
   };
 
-  _getPlayerNumberFromGamepad = (gamepad) => {
-    if (this.gamepadConfig.playerGamepadId[0] === gamepad.id) {
-      return 1;
-    }
-
-    if (this.gamepadConfig.playerGamepadId[1] === gamepad.id) {
-      return 2;
-    }
-
-    return 1;
-  };
-
   poll = () => {
-    const gamepads = navigator.getGamepads
-      ? navigator.getGamepads()
-      : navigator.webkitGetGamepads();
+    const gamepads = Array.from(
+      navigator.getGamepads?.() || navigator.webkitGetGamepads?.() || [],
+    ).filter(Boolean);
 
-    const usedPlayers = [];
-
-    for (let gamepadIndex = 0; gamepadIndex < gamepads.length; gamepadIndex++) {
-      const gamepad = gamepads[gamepadIndex];
-      const previousGamepad = this.gamepadState[gamepadIndex];
-
-      if (!gamepad) {
-        continue;
+    for (const index of this.inputs.devices.keys()) {
+      if (!gamepads.some((gamepad) => gamepad.index === index)) {
+        this.inputs.disconnect(index);
+        delete this.gamepadState[index];
       }
+    }
 
-      if (!previousGamepad) {
-        this.gamepadState[gamepadIndex] = gamepad;
-        continue;
+    for (const gamepad of gamepads) {
+      this.ensureDefaultConfig(gamepad);
+      this.inputs.connect(gamepad);
+      const previous = this.gamepadState[gamepad.index];
+      if (this.buttonCallback && previous?.id === gamepad.id) {
+        const button = gamepad.buttons.findIndex(
+          (value, code) => value.pressed && !previous.buttons[code]?.pressed,
+        );
+        const axis = gamepad.axes.findIndex(
+          (value, code) =>
+            Math.abs(value) === 1 && value !== previous.axes[code],
+        );
+        if (button !== -1 || axis !== -1) {
+          this.buttonCallback({
+            gamepadId: gamepad.id,
+            gamepadIndex: gamepad.index,
+            type: button !== -1 ? "button" : "axis",
+            code: button !== -1 ? button : axis,
+            value: button !== -1 ? undefined : gamepad.axes[axis],
+          });
+        }
+      } else if (!this.buttonCallback) {
+        const pressed = new Set();
+        for (const binding of this.gamepadConfig?.configs?.[gamepad.id]
+          ?.buttons || []) {
+          const down =
+            binding.type === "button"
+              ? gamepad.buttons[binding.code]?.pressed
+              : gamepad.axes[binding.code] === binding.value;
+          if (down) pressed.add(binding.buttonId);
+        }
+        this.inputs.gamepadButtons(gamepad.index, pressed);
       }
-
-      const buttons = gamepad.buttons;
-      const previousButtons = previousGamepad.buttons;
-
-      if (this.buttonCallback) {
-        for (let code = 0; code < gamepad.axes.length; code++) {
-          const axis = gamepad.axes[code];
-          const previousAxis = previousGamepad.axes[code];
-
-          if (axis === -1 && previousAxis !== -1) {
-            this.buttonCallback({
-              gamepadId: gamepad.id,
-              type: "axis",
-              code: code,
-              value: axis,
-            });
-          }
-
-          if (axis === 1 && previousAxis !== 1) {
-            this.buttonCallback({
-              gamepadId: gamepad.id,
-              type: "axis",
-              code: code,
-              value: axis,
-            });
-          }
-        }
-
-        for (let code = 0; code < buttons.length; code++) {
-          const button = buttons[code];
-          const previousButton = previousButtons[code];
-          if (button.pressed && !previousButton.pressed) {
-            this.buttonCallback({
-              gamepadId: gamepad.id,
-              type: "button",
-              code: code,
-            });
-          }
-        }
-      } else if (this.gamepadConfig) {
-        let playerNumber = this._getPlayerNumberFromGamepad(gamepad);
-        if (usedPlayers.length < 2) {
-          if (usedPlayers.indexOf(playerNumber) !== -1) {
-            playerNumber++;
-            if (playerNumber > 2) playerNumber = 1;
-          }
-          usedPlayers.push(playerNumber);
-
-          if (this.gamepadConfig.configs[gamepad.id]) {
-            const configButtons =
-              this.gamepadConfig.configs[gamepad.id].buttons;
-
-            for (let i = 0; i < configButtons.length; i++) {
-              const configButton = configButtons[i];
-              if (configButton.type === "button") {
-                const code = configButton.code;
-                const button = buttons[code];
-                const previousButton = previousButtons[code];
-
-                if (button.pressed && !previousButton.pressed) {
-                  this.onButtonDown(playerNumber, configButton.buttonId);
-                } else if (!button.pressed && previousButton.pressed) {
-                  this.onButtonUp(playerNumber, configButton.buttonId);
-                }
-              } else if (configButton.type === "axis") {
-                const code = configButton.code;
-                const axis = gamepad.axes[code];
-                const previousAxis = previousGamepad.axes[code];
-
-                if (
-                  axis === configButton.value &&
-                  previousAxis !== configButton.value
-                ) {
-                  this.onButtonDown(playerNumber, configButton.buttonId);
-                }
-
-                if (
-                  axis !== configButton.value &&
-                  previousAxis === configButton.value
-                ) {
-                  this.onButtonUp(playerNumber, configButton.buttonId);
-                }
-              }
-            }
-          }
-        }
-      }
-
-      this.gamepadState[gamepadIndex] = {
-        buttons: buttons.map((b) => {
-          return { pressed: b.pressed };
-        }),
-        axes: gamepad.axes.slice(0),
+      this.gamepadState[gamepad.index] = {
+        id: gamepad.id,
+        buttons: gamepad.buttons.map(({ pressed }) => ({ pressed })),
+        axes: gamepad.axes.slice(),
       };
     }
   };
@@ -175,9 +123,11 @@ export default class GamepadController {
   };
 
   setGamepadConfig = (gamepadConfig) => {
+    this.inputs.release(1);
+    this.inputs.release(2);
+    this.gamepadConfig = gamepadConfig;
     try {
       localStorage.setItem("gamepadConfig", JSON.stringify(gamepadConfig));
-      this.gamepadConfig = gamepadConfig;
     } catch (e) {
       console.warn("Failed to set gamepadConfig in localStorage.", e);
     }
@@ -200,6 +150,8 @@ export default class GamepadController {
     return {
       stop: () => {
         stopped = true;
+        this.inputs.release(1);
+        this.inputs.release(2);
       },
     };
   };

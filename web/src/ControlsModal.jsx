@@ -9,7 +9,12 @@ class ControlsModal extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      gamepadConfig: props.gamepadConfig,
+      gamepadConfig: {
+        ...props.gamepadConfig,
+        playerGamepadId: props.gamepadController.inputs.players.map(
+          (device) => device?.id || null,
+        ),
+      },
       keys: props.keys,
       button: undefined,
       modified: false,
@@ -32,7 +37,35 @@ class ControlsModal extends Component {
     this.state.currentPromptButton = -1;
   }
 
+  componentDidMount() {
+    this.unsubscribeInputs = this.props.gamepadController.inputs.subscribe(
+      () => {
+        const playerGamepadId = this.props.gamepadController.inputs.players.map(
+          (device) => device?.id || null,
+        );
+        this.removeKeyListener();
+        this.setState((state) => ({
+          gamepadConfig: {
+            configs: {
+              ...this.props.gamepadController.gamepadConfig?.configs,
+              ...state.gamepadConfig.configs,
+            },
+            playerGamepadId,
+          },
+          currentPromptButton: -1,
+          controllerIcon: playerGamepadId.map((id) =>
+            id ? GAMEPAD_ICON : KEYBOARD_ICON,
+          ),
+          controllerIconAlt: playerGamepadId.map((id) =>
+            id ? "gamepad" : "keyboard",
+          ),
+        }));
+      },
+    );
+  }
+
   componentWillUnmount() {
+    this.unsubscribeInputs();
     if (this.state.modified) {
       this.props.setKeys(this.state.keys);
       this.props.setGamepadConfig(this.state.gamepadConfig);
@@ -42,14 +75,25 @@ class ControlsModal extends Component {
 
   listenForKey(button) {
     var currentPromptButton = button[1];
+    this.props.gamepadController.inputs.release(button[0]);
 
     this.removeKeyListener();
     this.setState({ button, currentPromptButton });
-    this.props.promptButton(this.handleGamepadButtonDown);
-    document.addEventListener("keydown", this.handleKeyDown);
+    const device = this.props.gamepadController.inputs.players[button[0] - 1];
+    if (device) {
+      this.props.promptButton(this.handleGamepadButtonDown);
+    } else {
+      document.addEventListener("keydown", this.handleKeyDown);
+    }
   }
 
   handleGamepadButtonDown(buttonInfo) {
+    const selected =
+      this.props.gamepadController.inputs.players[this.state.button[0] - 1];
+    if (selected?.index !== buttonInfo.gamepadIndex) {
+      this.props.promptButton(this.handleGamepadButtonDown);
+      return;
+    }
     this.removeKeyListener();
 
     var button = this.state.button;
@@ -164,6 +208,72 @@ class ControlsModal extends Component {
           </div>
 
           <div className="px-4 py-2">
+            <div className="flex gap-4 mb-4">
+              {[1, 2].map((player) => {
+                const inputs = this.props.gamepadController.inputs;
+                const selected = inputs.players[player - 1];
+                const disconnected =
+                  selected && !inputs.devices.has(selected.index);
+                return (
+                  <label key={player} className="flex-1 min-w-0">
+                    Player {player} input
+                    <select
+                      aria-label={`Player ${player} input`}
+                      className="block w-full bg-black text-white border border-white p-1 mt-1"
+                      value={
+                        selected === undefined
+                          ? "auto"
+                          : selected
+                            ? String(selected.index)
+                            : "keyboard"
+                      }
+                      onChange={(event) =>
+                        inputs.select(
+                          player,
+                          event.target.value === "keyboard"
+                            ? null
+                            : Number(event.target.value),
+                        )
+                      }
+                    >
+                      {selected === undefined && (
+                        <option value="auto" disabled>
+                          Automatic (keyboard)
+                        </option>
+                      )}
+                      <option value="keyboard">Keyboard</option>
+                      {disconnected && (
+                        <option value={selected.index}>
+                          Gamepad {selected.index + 1} — disconnected
+                        </option>
+                      )}
+                      {Array.from(inputs.devices.values()).map((device) => (
+                        <option
+                          key={device.index}
+                          value={device.index}
+                          disabled={inputs.players.some(
+                            (entry, slot) =>
+                              slot !== player - 1 &&
+                              entry?.index === device.index,
+                          )}
+                        >
+                          Gamepad {device.index + 1}: {device.id}
+                        </option>
+                      ))}
+                    </select>
+                    {disconnected && (
+                      <span role="status">
+                        Disconnected — choose another input.
+                      </span>
+                    )}
+                  </label>
+                );
+              })}
+            </div>
+            <p className="text-sm mb-3">
+              Connect a gamepad and press a button if it does not appear. Both
+              players can choose keyboard with separate keys.
+            </p>
             <table className="w-full">
               <thead>
                 <tr>
