@@ -27,7 +27,7 @@ jobs:
         run: npm ci
         working-directory: web
       - name: Build web
-        run: npm run build
+        run: npm run build -- --base="/${{ github.event.repository.name }}/"
         working-directory: web
       - name: Publish build to gh-pages
         uses: peaceiris/actions-gh-pages@v4
