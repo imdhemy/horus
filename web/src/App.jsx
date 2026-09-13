@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { HashRouter, Route, Routes } from "react-router-dom";
 import ListPage from "./ListPage";
 import RunPage from "./RunPage";
 import { handleError } from "./utils";
@@ -19,7 +19,7 @@ class App extends Component {
       );
     }
     return (
-      <BrowserRouter>
+      <HashRouter>
         <div className="h-full font-mono">
           <Routes>
             <Route exact path="/" element={<ListPage />} />
@@ -27,7 +27,7 @@ class App extends Component {
             <Route path="/run" element={<RunPage />} />
           </Routes>
         </div>
-      </BrowserRouter>
+      </HashRouter>
     );
   }
 
