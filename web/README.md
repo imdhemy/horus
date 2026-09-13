@@ -13,7 +13,36 @@ The local emulator dependency remains named `jsnes` for compatibility with exist
 
     $ npm run build
 
-The built app will be in `build/`.
+The built app will be in `dist/`.
+
+## Publishing to GitHub Pages
+
+Publishing is manual. After the workflow is merged into the default branch,
+open **Actions → Deploy web to GitHub Pages → Run workflow**, select the
+source branch, and run it. The workflow builds `web` and publishes `web/dist`
+to the root of `gh-pages`, including `.nojekyll`. Pushes and pull requests do
+not trigger this workflow.
+
+For the first deployment:
+
+1. Run the workflow to create and populate `gh-pages`. If Pages is not yet
+   configured, the final **Request Pages build** step will fail; the published
+   branch remains available for the next step.
+2. Open **Settings → Pages**, choose **Deploy from a branch**, and select
+   **gh-pages** and **/ (root)**. Save the settings.
+3. Run the workflow again. It explicitly requests a Pages build because pushes
+   made using `GITHUB_TOKEN` do not automatically trigger one.
+4. Wait for the Pages build and deployment to finish, then open the site URL
+   shown in Settings → Pages. A successful branch publish alone does not mean
+   the site has finished deploying.
+
+For subsequent releases, run the workflow manually and wait for the Pages
+deployment. No personal access token is required; the workflow uses the
+repository token with contents and Pages write permissions.
+
+After deployment, check that the library loads, a game opens, and its controls
+respond. Record observed issues as follow-ups. This workflow publishes the
+current app without changing routing or asset paths.
 
 ## Running tests
 
