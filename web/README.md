@@ -41,8 +41,9 @@ deployment. No personal access token is required; the workflow uses the
 repository token with contents and Pages write permissions.
 
 After deployment, check that the library loads, a game opens, and its controls
-respond. Record observed issues as follow-ups. This workflow publishes the
-current app without changing routing or asset paths.
+respond. Record observed issues as follow-ups. This workflow builds the app
+with the repository base path and publishes it using hash-based routing so
+GitHub Pages can serve deep links without server-side rewrites.
 
 ## Running tests
 
