@@ -1,9 +1,9 @@
-import React, { Component } from 'react';
-import config from './config';
+import React, { Component } from "react";
+import config from "./config";
 
-import RomLibrary from './RomLibrary';
-import { AppHeader } from './component/app-header';
-import { RomList } from './component/rom-list';
+import RomLibrary from "./RomLibrary";
+import { AppHeader } from "./component/app-header";
+import { RomList } from "./component/rom-list";
 
 function toBuiltInRomList(roms) {
   const result = [];
@@ -58,8 +58,8 @@ class ListPage extends Component {
           <AppHeader />
           <RomList roms={toBuiltInRomList(config.ROMS)} />
           <p>
-            Or, drag and drop a ROM file onto the page to add it to your library.
-            (Google may help you find them.)
+            Or, drag and drop a ROM file onto the page to add it to your
+            library. (Google may help you find them.)
           </p>
           <div className="mt-10">
             <p className="mb-4">Previously played:</p>
