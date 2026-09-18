@@ -1,19 +1,36 @@
-import React, { Component } from "react";
-import { Link } from "react-router-dom";
-import config from "./config";
+import React, { Component } from 'react';
+import config from './config';
 
-import RomLibrary from "./RomLibrary";
-import { AppHeader } from "./component/app-header";
-import { RomList } from "./component/rom-list";
+import RomLibrary from './RomLibrary';
+import { AppHeader } from './component/app-header';
+import { RomList } from './component/rom-list';
 
-function toRomList(roms) {
+function toBuiltInRomList(roms) {
   const result = [];
   Object.keys(roms).map((i) => {
     result.push({
       id: i,
       name: roms[i]["name"],
+      path: i,
+      removable: false,
     });
   });
+  return result;
+}
+
+function toLocalRomList(roms) {
+  const result = [];
+  roms
+    .sort((a, b) => new Date(b.added) - new Date(a.added))
+    .map((rom) => {
+      result.push({
+        id: rom.hash,
+        name: rom.name,
+        path: `local-${rom.hash}`,
+        removable: true,
+      });
+    });
+
   return result;
 }
 
@@ -25,6 +42,11 @@ class ListPage extends Component {
     };
   }
 
+  handleDeleteRom = (rom) => {
+    RomLibrary.delete(rom.id);
+    this.updateLibrary();
+  };
+
   render() {
     return (
       <div
@@ -34,51 +56,22 @@ class ListPage extends Component {
       >
         <div className="max-w-3xl mx-auto py-4 pb-6">
           <AppHeader />
-          <RomList roms={toRomList(config.ROMS)} />
+          <RomList roms={toBuiltInRomList(config.ROMS)} />
           <p>
-            Or, drag and drop a ROM file onto the page to play it. (Google may
-            help you find them.)
+            Or, drag and drop a ROM file onto the page to add it to your library.
+            (Google may help you find them.)
           </p>
-
-          {this.state.romLibrary.length > 0 ? (
-            <div className="mt-10">
-              <p className="mb-4">Previously played:</p>
-
-              <div>
-                {this.state.romLibrary
-                  .sort((a, b) => new Date(b.added) - new Date(a.added))
-                  .map((rom) => (
-                    <Link
-                      key={rom.hash}
-                      to={"run/local-" + rom.hash}
-                      className="block px-5 py-3 border border-gray-300 bg-black text-gray-100 no-underline hover:text-gray-100"
-                    >
-                      {rom.name}
-                      <span
-                        onClick={(e) => {
-                          e.preventDefault();
-                          this.deleteRom(rom.hash);
-                        }}
-                        className="text-red-600 ml-3 text-2xl leading-none relative top-0.5 hover:text-red-900 cursor-pointer"
-                        title="Delete"
-                      >
-                        &times;
-                      </span>
-                      <span className="float-right">&rsaquo;</span>
-                    </Link>
-                  ))}
-              </div>
-            </div>
-          ) : null}
+          <div className="mt-10">
+            <p className="mb-4">Previously played:</p>
+            <RomList
+              onDelete={this.handleDeleteRom}
+              roms={toLocalRomList(this.state.romLibrary)}
+            />
+          </div>
         </div>
       </div>
     );
   }
-
-  deleteRom = (hash) => {
-    RomLibrary.delete(hash);
-    this.updateLibrary();
-  };
 
   updateLibrary = () => {
     this.setState({ romLibrary: RomLibrary.load() });
@@ -96,9 +89,8 @@ class ListPage extends Component {
       ? e.dataTransfer.items[0].getAsFile()
       : e.dataTransfer.files[0];
 
-    RomLibrary.save(file).then((rom) => {
+    RomLibrary.save(file).then(() => {
       this.updateLibrary();
-      this.props.history.push({ pathname: "run/local-" + rom.hash });
     });
   };
 }
