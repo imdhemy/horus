@@ -135,7 +135,22 @@ class RunPage extends Component {
     );
   }
 
+  enterFullScreen() {
+    const element = document.documentElement;
+
+    if (!document.fullscreenEnabled || !element.requestFullscreen) return;
+
+    void element.requestFullscreen();
+  }
+
+  exitFullScreen() {
+    if (!document.fullscreenEnabled || !document.exitFullscreen) return;
+
+    void document.exitFullscreen();
+  }
+
   componentDidMount() {
+    this.enterFullScreen();
     window.addEventListener("resize", this.layout);
     this.layout();
     this.load();
@@ -146,6 +161,7 @@ class RunPage extends Component {
     if (this.currentRequest) {
       this.currentRequest.abort();
     }
+    this.exitFullScreen();
   }
 
   load = () => {
