@@ -136,10 +136,16 @@ class RunPage extends Component {
   }
 
   enterFullScreen() {
-    void document.documentElement.requestFullscreen();
+    const element = document.documentElement;
+
+    if (!document.fullscreenEnabled || !element.requestFullscreen) return;
+
+    void element.requestFullscreen();
   }
 
   exitFullScreen() {
+    if (!document.fullscreenEnabled || !document.exitFullscreen) return;
+
     void document.exitFullscreen();
   }
 
