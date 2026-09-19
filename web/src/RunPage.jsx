@@ -135,7 +135,16 @@ class RunPage extends Component {
     );
   }
 
+  enterFullScreen() {
+    void document.documentElement.requestFullscreen();
+  }
+
+  exitFullScreen() {
+    void document.exitFullscreen();
+  }
+
   componentDidMount() {
+    this.enterFullScreen();
     window.addEventListener("resize", this.layout);
     this.layout();
     this.load();
@@ -146,6 +155,7 @@ class RunPage extends Component {
     if (this.currentRequest) {
       this.currentRequest.abort();
     }
+    this.exitFullScreen();
   }
 
   load = () => {
