@@ -44,7 +44,7 @@
     "eslint": "^10.0.2",
     "eslint-config-prettier": "^10.1.8",
     "eslint-webpack-plugin": "^6.0.0",
-    "prettier": "^3.6.2",
+    "prettier": "^3.9.8",
     "terser-webpack-plugin": "^5.3.10",
     "ts-loader": "^9.6.2",
     "tsx": "^4.23.13",
