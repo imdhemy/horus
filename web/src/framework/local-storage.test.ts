@@ -1,8 +1,12 @@
-import { describe, expect, it } from "vitest";
-import { findIn } from "./local-storage";
+import { beforeEach, describe, expect, it } from "vitest";
+import { findIn, setIn } from "./local-storage";
 
 describe("Local storage", () => {
-  describe("Find In", () => {
+  beforeEach(() => {
+    window.localStorage.clear();
+  });
+
+  describe("Find in storage", () => {
     it("should fail if item is not stored", () => {
       const find = findIn(window.localStorage);
 
@@ -21,6 +25,17 @@ describe("Local storage", () => {
       const actual = find("existing-key");
 
       expect(actual).toEqual({ ok: true, value: "value" });
+    });
+  });
+
+  describe("Set in storage", () => {
+    it("should store item in provided storage", () => {
+      const store = setIn(window.localStorage);
+
+      const result = store("new-key", "new-value");
+
+      expect(result.expiresAt).toBe(-1);
+      expect(window.localStorage.getItem("new-key")).toBeDefined();
     });
   });
 });

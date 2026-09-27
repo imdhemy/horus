@@ -1,11 +1,11 @@
-type WindowLocalStorage = typeof window.localStorage;
+type Storage = typeof window.localStorage;
 
 type FindResult = { ok: true; value: string } | { ok: false; error: string };
 
 export const findIn =
-  (localStorage: WindowLocalStorage) =>
+  (storage: Storage) =>
   (key: string): FindResult => {
-    const result = localStorage.getItem(key);
+    const result = storage.getItem(key);
 
     if (null === result) {
       return {
@@ -17,5 +17,17 @@ export const findIn =
     return {
       ok: true,
       value: result,
+    };
+  };
+
+type StoreResult = { expiresAt: number };
+
+export const setIn =
+  (storage: Storage) =>
+  (key: string, value: string): StoreResult => {
+    storage.setItem(key, value);
+
+    return {
+      expiresAt: -1,
     };
   };
