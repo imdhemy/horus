@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { findIn, setIn } from "./local-storage";
 
+const clock = { now: () => 0 };
 describe("Local storage", () => {
   beforeEach(() => {
     window.localStorage.clear();
@@ -8,7 +9,7 @@ describe("Local storage", () => {
 
   describe("Find in storage", () => {
     it("should fail if item is not stored", () => {
-      const find = findIn(window.localStorage);
+      const find = findIn(window.localStorage)(clock);
 
       const actual = find("non-existing-key");
 
@@ -19,22 +20,49 @@ describe("Local storage", () => {
     });
 
     it("should find stored item", () => {
-      window.localStorage.setItem("existing-key", "value");
-      const find = findIn(window.localStorage);
+      window.localStorage.setItem(
+        "existing-key",
+        JSON.stringify({ value: "value", expiresAt: -1 }),
+      );
+      const find = findIn(window.localStorage)(clock);
 
       const actual = find("existing-key");
 
       expect(actual).toEqual({ ok: true, value: "value" });
     });
+
+    it("should fail finding expired item", () => {
+      const store = setIn(window.localStorage)(clock);
+      store("expired-key", "value", 100);
+      const find = findIn(window.localStorage)({ now: () => 200 });
+
+      const actual = find("expired-key");
+
+      expect(actual).toEqual({
+        ok: false,
+        error: "Item expired-key not found",
+      });
+    });
   });
 
   describe("Set in storage", () => {
     it("should store item in provided storage", () => {
-      const store = setIn(window.localStorage);
+      const store = setIn(window.localStorage)(Date);
 
       const result = store("new-key", "new-value");
 
       expect(result.expiresAt).toBe(-1);
+      expect(window.localStorage.getItem("new-key")).toBeDefined();
+    });
+  });
+
+  describe("Set with ttl", () => {
+    it("should store item with provided ttl in milliseconds", () => {
+      const store = setIn(window.localStorage)(clock);
+
+      const result = store("new-key", "new-value", 100);
+
+      expect(result.expiresAt).toBe(100);
       expect(window.localStorage.getItem("new-key")).toBeDefined();
     });
   });
