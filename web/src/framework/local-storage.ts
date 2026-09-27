@@ -57,3 +57,12 @@ export const setIn =
 
     return { expiresAt };
   };
+
+type RemoveResult = { ok: true };
+
+export const removeFrom =
+  (storage: Storage) =>
+  (key: string): RemoveResult => {
+    storage.removeItem(key);
+    return { ok: true };
+  };

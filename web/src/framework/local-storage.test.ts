@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { findIn, setIn } from "./local-storage";
+import { findIn, removeFrom, setIn } from "./local-storage";
 
 const clock = { now: () => 0 };
 describe("Local storage", () => {
@@ -56,7 +56,7 @@ describe("Local storage", () => {
     });
   });
 
-  describe("Set with ttl", () => {
+  describe("Set in storage with ttl", () => {
     it("should store item with provided ttl in milliseconds", () => {
       const store = setIn(window.localStorage)(clock);
 
@@ -64,6 +64,21 @@ describe("Local storage", () => {
 
       expect(result.expiresAt).toBe(100);
       expect(window.localStorage.getItem("new-key")).toBeDefined();
+    });
+  });
+
+  describe("Remove from storage", () => {
+    it("should remove item from provided storage", () => {
+      window.localStorage.setItem(
+        "key-to-remove",
+        JSON.stringify({ value: "value", expiresAt: -1 }),
+      );
+      const remove = removeFrom(window.localStorage);
+
+      const result = remove("key-to-remove");
+
+      expect(result.ok).toBe(true);
+      expect(window.localStorage.getItem("key-to-remove")).toBeNull();
     });
   });
 });
