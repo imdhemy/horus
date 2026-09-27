@@ -66,3 +66,7 @@ export const removeFrom =
     storage.removeItem(key);
     return { ok: true };
   };
+
+export const find = findIn(window.localStorage)(Date);
+export const set = setIn(window.localStorage)(Date);
+export const remove = removeFrom(window.localStorage);
