@@ -1,0 +1,70 @@
+.splash-caption {
+    animation: splash-outline 600ms ease-out 1.4s both;
+}
+
+.splash-logo > g {
+    animation: splash-assemble 1.2s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: var(--splash-delay, 0ms);
+}
+
+.splash-logo__face {
+    --splash-x: 0px;
+    --splash-y: -65px;
+}
+
+.splash-logo__body-left {
+    --splash-x: -85px;
+    --splash-y: 45px;
+    --splash-delay: 100ms;
+}
+
+.splash-logo__body-right {
+    --splash-x: 85px;
+    --splash-y: 45px;
+    --splash-delay: 200ms;
+}
+
+.splash-logo__staff {
+    --splash-x: 100px;
+    --splash-y: 0px;
+    --splash-delay: 300ms;
+}
+
+.splash-logo__rays {
+    --splash-x: 0px;
+    --splash-y: -90px;
+    --splash-delay: 400ms;
+}
+
+.splash-logo__eye {
+    --splash-x: 40px;
+    --splash-y: -35px;
+    --splash-delay: 500ms;
+}
+
+.splash-logo > .splash-logo__outline {
+    animation: splash-outline 600ms ease-out 1.2s both;
+}
+
+@keyframes splash-assemble {
+    from {
+        opacity: 0;
+        transform: translate(var(--splash-x), var(--splash-y));
+    }
+    to {
+        opacity: 1;
+        transform: translate(0, 0);
+    }
+}
+
+@keyframes splash-outline {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .splash-logo > g,
+    .splash-caption {
+        animation: none;
+    }
+}

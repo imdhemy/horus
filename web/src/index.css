@@ -1,4 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
 @import "tailwindcss";
+
+@theme {
+  --font-sans: "VT323", monospace;
+}
 
 @layer base {
   html,
@@ -7,6 +12,7 @@
     height: 100%;
     background-color: black;
     color: #f8f9fa;
+    font-family: var(--font-sans);
   }
 
   a {
