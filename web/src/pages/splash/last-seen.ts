@@ -1,27 +1,23 @@
-import { find, set } from "../../framework/local-storage";
+import { cookie } from "../../framework/cookies";
 
 const KEY = "SPLASH_LAST_SEEN_AT";
-const ONE_HOUR_MILLIS = 60 * 60 * 1000;
+const ONE_HOUR_SECONDS = 60 * 60;
 
-type Setter = typeof set;
-type SetResult = {
-  expiresAt: number;
+type Setter = typeof cookie.set;
+type Clock = { now: () => number };
+
+export const setLastSeenWith = (set: Setter) => (clock: Clock) => (): void => {
+  set(KEY, String(clock.now()), ONE_HOUR_SECONDS);
 };
 
-export const setLastSeenWith = (set: Setter) => (): SetResult => {
-  return set(KEY, "", ONE_HOUR_MILLIS);
-};
-
-type Finder = typeof find;
+type Finder = typeof cookie.find;
 type IsSeenResult = {
   ok: boolean;
 };
 
 export const checkIsSeenWith = (finder: Finder) => (): IsSeenResult => {
-  const result = finder(KEY);
-
-  return { ok: result.ok };
+  return { ok: finder(KEY) !== undefined };
 };
 
-export const setLastSeen = setLastSeenWith(set);
-export const checkIsSeen = checkIsSeenWith(find);
+export const setLastSeen = setLastSeenWith(cookie.set)(Date);
+export const checkIsSeen = checkIsSeenWith(cookie.find);
