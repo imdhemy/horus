@@ -48,6 +48,14 @@ describe("Cookies", () => {
   });
 
   describe("set", () => {
+    it("preserves other cookies", () => {
+      set("first", "first value", 3600);
+      set("second", "second value", 3600);
+
+      expect(find("first")).toBe("first value");
+      expect(find("second")).toBe("second value");
+    });
+
     it("deletes when maxAge is zero", () => {
       setSession("marker", "value");
 
