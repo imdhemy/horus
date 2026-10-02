@@ -1,35 +1,30 @@
 import { describe, expect, test, vi } from "vitest";
-import { find, set } from "../../framework/local-storage";
+import { cookie } from "../../framework/cookies";
 import { checkIsSeenWith, setLastSeenWith } from "./last-seen";
 
 describe("Last seen at", () => {
-  test("set last seen at", () => {
-    const setter = vi.fn<typeof set>(() => ({ expiresAt: 10 }));
-    const setLastSeen = setLastSeenWith(setter);
+  test("stores the timestamp for one hour", () => {
+    const setter = vi.fn<typeof cookie.set>();
+    const clock = { now: () => 123456789 };
+    const setLastSeen = setLastSeenWith(setter)(clock);
 
-    const result = setLastSeen();
+    setLastSeen();
 
-    expect(result).toEqual({ expiresAt: 10 });
+    expect(setter).toHaveBeenCalledWith(
+      "SPLASH_LAST_SEEN_AT",
+      "123456789",
+      3600,
+    );
   });
 
   test("check if seen when not seen", () => {
-    const finder = vi.fn<typeof find>(() => ({
-      ok: false,
-      error: "not found",
-    }));
-    const checkIsSeen = checkIsSeenWith(finder);
-
-    const result = checkIsSeen();
-
-    expect(result).toEqual({ ok: false });
+    const finder = vi.fn<typeof cookie.find>(() => undefined);
+    expect(checkIsSeenWith(finder)()).toEqual({ ok: false });
+    expect(finder).toHaveBeenCalledWith("SPLASH_LAST_SEEN_AT");
   });
 
-  test("check if seen when seen", () => {
-    const finder = vi.fn<typeof find>(() => ({ ok: true, value: "" }));
-    const checkIsSeen = checkIsSeenWith(finder);
-
-    const result = checkIsSeen();
-
-    expect(result).toEqual({ ok: true });
+  test("check if seen when the marker has an empty value", () => {
+    const finder = vi.fn<typeof cookie.find>(() => "");
+    expect(checkIsSeenWith(finder)()).toEqual({ ok: true });
   });
 });
