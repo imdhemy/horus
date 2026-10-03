@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import config from "./config";
 
 import RomLibrary from "./RomLibrary";
-import { AppHeader } from "./component/app-header";
 import { RomList } from "./component/rom-list";
 
 function toBuiltInRomList(roms) {
@@ -50,12 +49,11 @@ class ListPage extends Component {
   render() {
     return (
       <div
-        className="h-full"
+        className="h-full text-white"
         onDragOver={this.handleDragOver}
         onDrop={this.handleDrop}
       >
         <div className="max-w-3xl mx-auto py-4 pb-6">
-          <AppHeader />
           <RomList roms={toBuiltInRomList(config.ROMS)} />
           <p>
             Or, drag and drop a ROM file onto the page to add it to your
