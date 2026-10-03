@@ -4,9 +4,9 @@ import { AppFooter } from '../component/app-footer';
 
 export const Layout = () => {
     return (
-        <div>
+        <div className='min-h-dvh flex flex-col'>
             <AppHeader/>
-            <main><Outlet context='library'/></main>
+            <main className='flex-1'><Outlet context='library'/></main>
             <AppFooter/>
         </div>
     );
