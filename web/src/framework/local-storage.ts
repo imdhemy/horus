@@ -67,6 +67,8 @@ export const removeFrom =
     return { ok: true };
   };
 
-export const find = findIn(window.localStorage)(Date);
-export const set = setIn(window.localStorage)(Date);
-export const remove = removeFrom(window.localStorage);
+export const localStorage = {
+  find: findIn(window.localStorage)(Date),
+  set: setIn(window.localStorage)(Date),
+  remove: removeFrom(window.localStorage),
+};
