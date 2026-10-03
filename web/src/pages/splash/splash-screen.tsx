@@ -5,7 +5,7 @@ export const SPLASH_SCREEN_TIME = 5000;
 // Artwork: CC0, SVG Repo — https://www.svgrepo.com/svg/75004/horus
 export const SplashScreen = () => {
     return (
-        <div className='flex min-h-full w-full flex-col items-center justify-center gap-8 overflow-hidden bg-black px-6 py-10 text-center font-sans'>
+        <div className='flex min-h-dvh w-full flex-col items-center justify-center gap-8 overflow-hidden bg-black px-6 py-10 text-center font-pixels'>
             <svg
                 className='splash-logo h-auto w-[min(55vw,280px,42svh)] shrink-0 overflow-visible'
                 viewBox='0 0 465 465'

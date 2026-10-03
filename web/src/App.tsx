@@ -1,9 +1,10 @@
 import { HashRouter, Route, Routes } from 'react-router-dom';
 import ListPage from './ListPage';
-import RunPage from './RunPage';
 import { checkIsSeen, setLastSeen } from './pages/splash/last-seen';
 import { SPLASH_SCREEN_TIME, SplashScreen } from './pages/splash/splash-screen';
 import { useEffect, useState } from 'react';
+import { Layout } from './layouts/layout';
+import RunPage from './RunPage';
 
 function App() {
     const [showSplash, setShowSplash] = useState<boolean>(() => !checkIsSeen().ok);
@@ -28,7 +29,9 @@ function App() {
     return (
         <HashRouter>
             <Routes>
-                <Route path='/' element={<ListPage/>}/>
+                <Route element={<Layout/>}>
+                    <Route index path='/' element={<ListPage/>}/>
+                </Route>
                 <Route path='/run/:slug' element={<RunPage/>}/>
             </Routes>
         </HashRouter>
