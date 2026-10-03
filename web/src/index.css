@@ -2,8 +2,9 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "VT323", monospace;
+  --font-pixels: "VT323", monospace;
   --color-text: #f3eee2;
+  --color-primary: #edb95e;
 }
 
 @layer base {

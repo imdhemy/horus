@@ -8,10 +8,9 @@ export const AppHeader = () => {
             <div className='flex gap-10'>
                 <Link to='/' className='flex items-center gap-2'>
                     <img src={logo} alt='Logo' className='w-12 h-12'/>
-                    <h1 className='text-3xl'>Horus</h1>
+                    <h1 className='text-3xl font-pixels font-bold'>Horus</h1>
                 </Link>
             </div>
         </header>
-
     );
 };
