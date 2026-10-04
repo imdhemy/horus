@@ -1,7 +1,6 @@
 type Storage = typeof window.localStorage;
 type Clock = { now: () => number };
 
-type FindResult = { ok: true; value: string } | { ok: false; error: string };
 type StoredValue = { value: string; expiresAt: number };
 
 const assertIsStoredValue: (value: unknown) => asserts value is StoredValue = (
@@ -18,14 +17,11 @@ const assertIsStoredValue: (value: unknown) => asserts value is StoredValue = (
 export const findIn =
   (storage: Storage) =>
   (clock: Clock) =>
-  (key: string): FindResult => {
+  (key: string): string | undefined => {
     const result = storage.getItem(key);
 
     if (null === result) {
-      return {
-        ok: false,
-        error: `Item ${key} not found.`,
-      };
+      return undefined;
     }
 
     const parsedResult = JSON.parse(result);
@@ -33,38 +29,25 @@ export const findIn =
 
     if (parsedResult.expiresAt !== -1 && parsedResult.expiresAt < clock.now()) {
       storage.removeItem(key);
-      return {
-        ok: false,
-        error: `Item ${key} not found`,
-      };
+      return undefined;
     }
 
-    return {
-      ok: true,
-      value: parsedResult.value,
-    };
+    return parsedResult.value;
   };
-
-type StoreResult = { expiresAt: number };
 
 export const setIn =
   (storage: Storage) =>
   (clock: Clock) =>
-  (key: string, value: string, ttl?: number): StoreResult => {
+  (key: string, value: string, ttl?: number): void => {
     const expiresAt = ttl ? clock.now() + ttl : -1;
     const storedValue = JSON.stringify({ value, expiresAt });
     storage.setItem(key, storedValue);
-
-    return { expiresAt };
   };
-
-type RemoveResult = { ok: true };
 
 export const removeFrom =
   (storage: Storage) =>
-  (key: string): RemoveResult => {
+  (key: string): void => {
     storage.removeItem(key);
-    return { ok: true };
   };
 
 export const localStorage = {

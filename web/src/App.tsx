@@ -1,26 +1,30 @@
 import { HashRouter, Route, Routes } from 'react-router-dom';
 import ListPage from './ListPage';
 import { checkIsSeen, setLastSeen } from './pages/splash/last-seen';
-import { SPLASH_SCREEN_TIME, SplashScreen } from './pages/splash/splash-screen';
+import { SplashScreen } from './pages/splash/splash-screen';
 import { useEffect, useState } from 'react';
 import { Layout } from './layouts/layout';
 import RunPage from './RunPage';
 
+const SPLASH_SCREEN_TIME = 5000;
+
 function App() {
-    const [showSplash, setShowSplash] = useState<boolean>(() => !checkIsSeen().ok);
+    const [showSplash, setShowSplash] = useState<boolean>(() => !checkIsSeen());
 
-    useEffect(() => {
-        if (!showSplash) {
-            return;
-        }
+    function showSplashEffect() {
+        if (!showSplash) return;
 
-        const timeout = window.setTimeout(() => {
+        function completeSplash() {
             setLastSeen();
             setShowSplash(false);
-        }, SPLASH_SCREEN_TIME);
+        }
+
+        const timeout = window.setTimeout(completeSplash, SPLASH_SCREEN_TIME);
 
         return () => window.clearTimeout(timeout);
-    }, [showSplash]);
+    }
+
+    useEffect(showSplashEffect, [showSplash]);
 
     if (showSplash) {
         return (<SplashScreen/>);

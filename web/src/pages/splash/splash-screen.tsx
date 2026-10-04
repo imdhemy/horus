@@ -1,7 +1,5 @@
 import './splash-screen.css';
 
-export const SPLASH_SCREEN_TIME = 5000;
-
 // Artwork: CC0, SVG Repo — https://www.svgrepo.com/svg/75004/horus
 export const SplashScreen = () => {
     return (
