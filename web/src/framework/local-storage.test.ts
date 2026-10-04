@@ -13,10 +13,7 @@ describe("Local storage", () => {
 
       const actual = find("non-existing-key");
 
-      expect(actual).toEqual({
-        ok: false,
-        error: "Item non-existing-key not found.",
-      });
+      expect(actual).toBeUndefined();
     });
 
     it("should find stored item", () => {
@@ -28,7 +25,7 @@ describe("Local storage", () => {
 
       const actual = find("existing-key");
 
-      expect(actual).toEqual({ ok: true, value: "value" });
+      expect(actual).toBe("value");
     });
 
     it("should fail finding expired item", () => {
@@ -38,10 +35,8 @@ describe("Local storage", () => {
 
       const actual = find("expired-key");
 
-      expect(actual).toEqual({
-        ok: false,
-        error: "Item expired-key not found",
-      });
+      expect(actual).toBeUndefined();
+      expect(window.localStorage.getItem("expired-key")).toBeNull();
     });
   });
 
@@ -49,10 +44,13 @@ describe("Local storage", () => {
     it("should store item in provided storage", () => {
       const store = setIn(window.localStorage)(Date);
 
-      const result = store("new-key", "new-value");
+      store("new-key", "new-value");
 
-      expect(result.expiresAt).toBe(-1);
-      expect(window.localStorage.getItem("new-key")).toBeDefined();
+      expect(
+        findIn(window.localStorage)({ now: () => Number.MAX_SAFE_INTEGER })(
+          "new-key",
+        ),
+      ).toBe("new-value");
     });
   });
 
@@ -60,10 +58,14 @@ describe("Local storage", () => {
     it("should store item with provided ttl in milliseconds", () => {
       const store = setIn(window.localStorage)(clock);
 
-      const result = store("new-key", "new-value", 100);
+      store("new-key", "new-value", 100);
 
-      expect(result.expiresAt).toBe(100);
-      expect(window.localStorage.getItem("new-key")).toBeDefined();
+      expect(findIn(window.localStorage)({ now: () => 99 })("new-key")).toBe(
+        "new-value",
+      );
+      expect(
+        findIn(window.localStorage)({ now: () => 101 })("new-key"),
+      ).toBeUndefined();
     });
   });
 
@@ -75,9 +77,8 @@ describe("Local storage", () => {
       );
       const remove = removeFrom(window.localStorage);
 
-      const result = remove("key-to-remove");
+      remove("key-to-remove");
 
-      expect(result.ok).toBe(true);
       expect(window.localStorage.getItem("key-to-remove")).toBeNull();
     });
   });
