@@ -1,11 +1,9 @@
 import React, { Component } from "react";
 import { Link, useLocation, useParams } from "react-router-dom";
 
-import config from "./config";
 import ControlsModal from "./ControlsModal";
 import Emulator from "./Emulator";
 import RomLibrary from "./RomLibrary";
-import { loadBinary } from "./utils";
 
 function withParams(Component) {
   return (props) => (
@@ -14,7 +12,7 @@ function withParams(Component) {
 }
 
 /*
- * The UI for the emulator. Also responsible for loading ROM from URL or file.
+ * The UI for the emulator. Also responsible for loading ROMs from the local library or a file.
  */
 class RunPage extends Component {
   constructor(props) {
@@ -26,7 +24,6 @@ class RunPage extends Component {
       paused: false,
       controlsModalOpen: false,
       loading: true,
-      loadedPercent: 3,
       error: null,
     };
   }
@@ -89,21 +86,7 @@ class RunPage extends Component {
               {this.state.error}
             </div>
           ) : this.state.loading ? (
-            <div
-              className="bg-gray-700 rounded"
-              style={{
-                position: "absolute",
-                width: "70%",
-                left: "15%",
-                top: "48%",
-                height: "8px",
-              }}
-            >
-              <div
-                className="bg-white rounded h-full transition-all"
-                style={{ width: this.state.loadedPercent + "%" }}
-              />
-            </div>
+            <div role="status">Loading ROM…</div>
           ) : this.state.romData ? (
             <Emulator
               romData={this.state.romData}
@@ -158,9 +141,6 @@ class RunPage extends Component {
 
   componentWillUnmount() {
     window.removeEventListener("resize", this.layout);
-    if (this.currentRequest) {
-      this.currentRequest.abort();
-    }
     this.exitFullScreen();
   }
 
@@ -169,48 +149,24 @@ class RunPage extends Component {
       const slug = this.props.params.slug;
       const isLocalROM = /^local-/.test(slug);
       const romHash = slug.split("-")[1];
-      const romInfo = isLocalROM
-        ? RomLibrary.getRomInfoByHash(romHash)
-        : config.ROMS[slug];
+      const romInfo = isLocalROM ? RomLibrary.getRomInfoByHash(romHash) : null;
 
       if (!romInfo) {
         this.setState({ error: `No such ROM: ${slug}` });
         return;
       }
 
-      if (isLocalROM) {
-        this.setState({ romName: romInfo.name });
-        const localROMData = localStorage.getItem("blob-" + romHash);
-        this.handleLoaded(localROMData);
-      } else {
-        this.setState({ romName: romInfo.description });
-        this.currentRequest = loadBinary(
-          romInfo.url,
-          (err, data) => {
-            if (err) {
-              this.setState({ error: `Error loading ROM: ${err.message}` });
-            } else {
-              this.handleLoaded(data);
-            }
-          },
-          this.handleProgress,
-        );
-      }
+      this.setState({ romName: romInfo.name });
+      const localROMData = localStorage.getItem("blob-" + romHash);
+      this.handleLoaded(localROMData);
     } else if (this.props.location.state && this.props.location.state.file) {
       let reader = new FileReader();
       reader.readAsBinaryString(this.props.location.state.file);
       reader.onload = (e) => {
-        this.currentRequest = null;
         this.handleLoaded(reader.result);
       };
     } else {
       this.setState({ error: "No ROM provided" });
-    }
-  };
-
-  handleProgress = (e) => {
-    if (e.lengthComputable) {
-      this.setState({ loadedPercent: (e.loaded / e.total) * 100 });
     }
   };
 
