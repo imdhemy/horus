@@ -2,14 +2,14 @@ import { describe, expect, it, vi } from "vitest";
 import { createReadFile, readFile } from "./read-file";
 
 describe("Read file", () => {
-  it("should preserve the file bytes in an ArrayBuffer", async () => {
+  it("should return the original file and its bytes in an ArrayBuffer", async () => {
     const bytes = new Uint8Array([0x00, 0x80, 0xff]);
     const file = new File([bytes], "game.nes");
 
     const actual = await readFile(file);
 
-    expect(actual).toBeInstanceOf(ArrayBuffer);
-    expect(new Uint8Array(actual)).toEqual(bytes);
+    expect(actual).toEqual({ buffer: bytes.buffer, file });
+    expect(actual.file).toBe(file);
   });
 
   it("should reject with the file read error", async () => {
