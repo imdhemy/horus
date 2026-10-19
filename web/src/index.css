@@ -3,14 +3,27 @@
 
 @theme {
   --font-pixels: "VT323", monospace;
-  --color-text: #f3eee2;
+  --color-primary-text: #f3eee2;
+  --color-secondary-text: #b7bdb8;
   --color-primary: #edb95e;
+  --color-darker-primary: #9b7436;
+  --color-danger: #e0a398;
+  --color-danger-text: #181b1d;
+  --radius-button: 4px;
+  --font-button: Arial, sans-serif;
+
+  --color-alert-success-bg: #273b33;
+  --color-alert-success-text: #bbe2c8;
+  --color-alert-failure-bg: #442e2c;
+  --color-alert-failure-text: #e0a398;
+  --color-alert-warning-bg: #403725;
+  --color-alert-warning-text: #edb95e;
 }
 
 @layer base {
   html,
   body {
     background: #222729;
-    color: var(--color-text);
+    color: var(--color-primary-text);
   }
 }
