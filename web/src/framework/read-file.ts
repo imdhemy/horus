@@ -1,0 +1,16 @@
+import type { UploadedFile } from "../model/uploaded-file";
+
+export const createReadFile = (createReader: () => FileReader) =>
+  async function readFile(file: File): Promise<UploadedFile> {
+    return new Promise((resolve, reject) => {
+      const reader = createReader();
+
+      reader.onload = () =>
+        resolve({ buffer: reader.result as ArrayBuffer, file });
+      reader.onerror = () => reject(reader.error);
+
+      reader.readAsArrayBuffer(file);
+    });
+  };
+
+export const readFile = createReadFile(() => new FileReader());

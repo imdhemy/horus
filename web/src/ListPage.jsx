@@ -1,21 +1,7 @@
 import React, { Component } from "react";
-import config from "./config";
 
 import RomLibrary from "./RomLibrary";
 import { RomList } from "./component/rom-list";
-
-function toBuiltInRomList(roms) {
-  const result = [];
-  Object.keys(roms).map((i) => {
-    result.push({
-      id: i,
-      name: roms[i]["name"],
-      path: i,
-      removable: false,
-    });
-  });
-  return result;
-}
 
 function toLocalRomList(roms) {
   const result = [];
@@ -26,7 +12,6 @@ function toLocalRomList(roms) {
         id: rom.hash,
         name: rom.name,
         path: `local-${rom.hash}`,
-        removable: true,
       });
     });
 
@@ -54,16 +39,15 @@ class ListPage extends Component {
         onDrop={this.handleDrop}
       >
         <div className="max-w-3xl mx-auto py-4 pb-6">
-          <RomList roms={toBuiltInRomList(config.ROMS)} />
           <p>
-            Or, drag and drop a ROM file onto the page to add it to your
-            library. (Google may help you find them.)
+            Drag and drop a ROM file onto the page to add it to your library.
           </p>
           <div className="mt-10">
-            <p className="mb-4">Previously played:</p>
+            <p className="mb-4">Your library</p>
             <RomList
               onDelete={this.handleDeleteRom}
               roms={toLocalRomList(this.state.romLibrary)}
+              emptyStateMessage="Your library is empty. Add a ROM file to get started."
             />
           </div>
         </div>

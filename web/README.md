@@ -75,21 +75,12 @@ Unfortunately this isn't trivial at the moment. The best way is copy and paste c
 
 These links describe the upstream JSNES web integration; they do not describe a published Horus package.
 
-## Adding roms
+## Adding ROMs
 
-Open `src/config.js` and add a new key to `config.ROMS`. For example:
+Drag and drop a local NES ROM file onto the library page to add it to your
+library. Select its name or Play button to open it. Use the Remove button to
+delete it from the library.
 
-```javascript
-const config = {
-  ROMS: {
-    // ...
-    myrom: {
-      name: "My Rom",
-      description: <span>This is my own homebrew NES rom</span>,
-      url: "http://localhost:3000/roms/myrom/myrom.nes"
-    }
-  }
-}
-```
-
-Then, add the ROM file as `public/roms/myrom/myrom.nes`. The ROM should now be available to play at http://localhost:3000/run/myrom
+Imported ROMs are stored in your browser's local storage and remain available
+on later visits in the same browser. The web UI does not include built-in ROMs
+or download ROMs from remote URLs.

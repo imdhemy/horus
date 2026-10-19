@@ -5,7 +5,6 @@ export type Rom = {
     id: string;
     name: string;
     path: string;
-    removable: boolean;
 };
 
 type Props = {
@@ -27,7 +26,7 @@ function RomItem({ rom, onDelete }: { rom: Rom; onDelete?: Props['onDelete'] }) 
                 {rom.name}
             </Link>
             <div className='flex items-center gap-3 pb-1'>
-                {rom.removable && onDelete && (
+                {onDelete && (
                     <button type='button' onClick={() => onDelete(rom)} className={`${controlClassName} border-red-500 text-red-500`} aria-label={`Remove ${rom.name}`} title='Remove from library'>
                         <svg width='20' height='20' viewBox='0 0 24 24' fill='currentColor' aria-hidden='true' focusable='false'>
                             <path d='M12 4 3 15h18L12 4ZM3 18h18v3H3z' />

@@ -3,7 +3,7 @@ import imdhemy from '../../assets/images/imdhemy.png';
 
 export const AppFooter = () => {
     return (
-        <footer className='p-5 border-t border-gray-700 text-text'>
+        <footer className='p-5 border-t border-gray-700 text-primary-text'>
             <div className='flex flex-col gap-4 text-sm lg:flex-row lg:justify-between'>
                 <div className='flex items-center gap-2'>
                     <IoGameController className='shrink-0' size='1.5em'/>
