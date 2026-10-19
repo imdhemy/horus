@@ -1,10 +1,10 @@
 import { HashRouter, Route, Routes } from 'react-router-dom';
-import ListPage from './ListPage';
 import { checkIsSeen, setLastSeen } from './pages/splash/last-seen';
 import { SplashScreen } from './pages/splash/splash-screen';
 import { useEffect, useState } from 'react';
 import { Layout } from './layouts/layout';
 import RunPage from './RunPage';
+import { LibraryPage } from './pages/library/library-page';
 
 const SPLASH_SCREEN_TIME = 5000;
 
@@ -34,7 +34,7 @@ function App() {
         <HashRouter>
             <Routes>
                 <Route element={<Layout/>}>
-                    <Route index path='/' element={<ListPage/>}/>
+                    <Route index path='/' element={<LibraryPage/>}/>
                 </Route>
                 <Route path='/run/:slug' element={<RunPage/>}/>
             </Routes>

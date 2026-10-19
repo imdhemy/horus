@@ -6,7 +6,11 @@ export const Layout = () => {
     return (
         <div className='min-h-dvh flex flex-col'>
             <AppHeader/>
-            <main className='flex-1'><Outlet context='library'/></main>
+            <main className='flex-1'>
+                <div className='p-5'>
+                    <Outlet context='library'/>
+                </div>
+            </main>
             <AppFooter/>
         </div>
     );
