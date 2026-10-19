@@ -8,4 +8,5 @@ export type Rom = {
 export type RomRepository = {
   save(rom: Rom): Promise<void>;
   all(): Promise<Rom[]>;
+  remove(id: string): Promise<void>;
 };

@@ -40,9 +40,26 @@ const createSave =
       ),
     );
 
+const createRemove =
+  (open: OpenDatabase): Repository["remove"] =>
+  (id) =>
+    withDatabase(open, (database) =>
+      runTransaction(
+        database,
+        ROMS_STORE,
+        "readwrite",
+        "ROM removal aborted",
+        (store) => {
+          store.delete(id);
+          return () => undefined;
+        },
+      ),
+    );
+
 export const createRomRepository = (open: OpenDatabase): Repository => ({
   all: createAll(open),
   save: createSave(open),
+  remove: createRemove(open),
 });
 
 export const RomRepository = createRomRepository(openDatabase);

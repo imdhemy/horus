@@ -5,7 +5,7 @@ import { createRomRepository } from "./rom-repository";
 
 function createDatabase(records: Rom[] = []) {
   const request = { result: records };
-  const store = { put: vi.fn(), getAll: vi.fn(() => request) };
+  const store = { put: vi.fn(), getAll: vi.fn(() => request), delete: vi.fn() };
   const transaction = {
     error: null as DOMException | null,
     oncomplete: null as (() => void) | null,
@@ -54,6 +54,29 @@ describe("ROM repository", () => {
     expect(database.close).toHaveBeenCalledOnce();
   });
 
+  it("should remove the ROM by ID and resolve only after transaction completion", async () => {
+    const { repository, database, transaction, store } = createDatabase();
+    const completed = vi.fn();
+
+    const actual = repository.remove(rom.id).then(completed);
+    await Promise.resolve();
+
+    expect(database.transaction).toHaveBeenCalledExactlyOnceWith(
+      ROMS_STORE,
+      "readwrite",
+    );
+    expect(transaction.objectStore).toHaveBeenCalledExactlyOnceWith(ROMS_STORE);
+    expect(store.delete).toHaveBeenCalledExactlyOnceWith(rom.id);
+    expect(completed).not.toHaveBeenCalled();
+    expect(database.close).not.toHaveBeenCalled();
+
+    transaction.oncomplete?.();
+    await actual;
+
+    expect(completed).toHaveBeenCalledOnce();
+    expect(database.close).toHaveBeenCalledOnce();
+  });
+
   it.each([
     { name: "stored ROMs", records: [rom] },
     { name: "an empty library", records: [] },
@@ -88,7 +111,7 @@ describe("ROM repository", () => {
     },
   );
 
-  it.each(["save", "all"] as const)(
+  it.each(["save", "all", "remove"] as const)(
     "should reject and close on an aborted %s transaction",
     async (method) => {
       const { repository, database, transaction } = createDatabase();
@@ -96,7 +119,11 @@ describe("ROM repository", () => {
       transaction.error = error;
 
       const actual =
-        method === "save" ? repository.save(rom) : repository.all();
+        method === "save"
+          ? repository.save(rom)
+          : method === "remove"
+            ? repository.remove(rom.id)
+            : repository.all();
       await Promise.resolve();
       transaction.onabort?.();
 
@@ -105,14 +132,18 @@ describe("ROM repository", () => {
     },
   );
 
-  it.each(["save", "all"] as const)(
+  it.each(["save", "all", "remove"] as const)(
     "should propagate opening failures from %s",
     async (method) => {
       const error = new Error("Cannot open database");
       const repository = createRomRepository(vi.fn().mockRejectedValue(error));
 
       const actual =
-        method === "save" ? repository.save(rom) : repository.all();
+        method === "save"
+          ? repository.save(rom)
+          : method === "remove"
+            ? repository.remove(rom.id)
+            : repository.all();
 
       await expect(actual).rejects.toBe(error);
     },
